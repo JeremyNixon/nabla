@@ -1,35 +1,47 @@
 import scala.io.Source
+import breeze.linalg.{DenseMatrix => BDM, DenseVector => BDV}
 import breeze.linalg._
 import breeze.math._
 import breeze.numerics._
 import java.io.File
 
-val filename = "iris-data.txt"
-val data = io.Source.fromFile(filename).getLines().map(_.split(",").map(_.trim.toDouble)).toArray
-
 val jf = new File("iris-data.txt")
 val data = csvread(jf)
 
-val features = data(::, 1 to 4)
-val y_train = data(::, 1)
+val x_train = data(::, 1 to 4)
+val y_train = data(::, 0)
 
-val ones = DenseMatrix.ones[Double](x_train.rows, 1)
-val x_train = DenseMatrix.horzcat(ones, features)
+def linear_model_sgd(x: BDM[Double], y_train: BDV[Double], lr:Double = .01,
+					 num_iters:Int = 1000):BDV[Double] = {
 
-val nrow = x_train.rows
-val ncol = x_train.cols
+	val ones = DenseMatrix.ones[Double](x.rows, 1)
+	val x_train = DenseMatrix.horzcat(ones, x)
 
-var weights = DenseVector.ones[Double](ncol)
+	val nrow = x_train.rows
+	val ncol = x_train.cols
 
-for (i <- 0 to 1000){
-val output = x_train * weights
-println(output(0 to 5))
-println(y_train(0 to 5))
-println("")
-val error = y_train - output
-print(sum(abs(error)) + "   ")
-val gradient = (x_train.t * error) :/ nrow.toDouble
-weights = weights + gradient :* .01
+	var weights = DenseVector.ones[Double](ncol) :* .01
+
+	for (i <- 0 to num_iters){
+		val output = x_train * weights
+		val error = y_train - output
+		println("Train Error = " + sum(abs(error)))
+		println("")
+		val gradient = (error.t * x_train) :/ nrow.toDouble
+		weights = weights + (gradient :* .01).t
+	}
+	weights
 }
 
-val predictions = x_train * weights
+def evaluate(weights: BDV[Double], x: BDM[Double]): BDV[Double] = {
+	val ones = DenseMatrix.ones[Double](x.rows, 1)
+	val x_test = DenseMatrix.horzcat(ones, x)
+	val predictions = x_test * weights
+	predictions
+}
+
+val weights = linear_model_sgd(x_train, y_train)
+val predictions = evaluate(weights, x_train)
+
+
+
