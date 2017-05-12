@@ -84,7 +84,7 @@ def init_conv_parameters(num_filters: Int, prev_channels: Int, filter_height: In
 			}
 		}
 	}
-	num_filters
+	filters
 }
 
 class Convolution2D(num_filters: Int, prev_channels: Int, filter_height: Int,
@@ -413,18 +413,18 @@ val trained = neural_network(t, features, labels, lr=.01, num_iters=500, optimiz
 
 
 
-val t = new Sequential()
-t.add(new Convolution2D(32, 1, 3, 3, 28, 28))
-t.add(new Activation("relu"))
-t.add(new MaxPooling2D(2,2,2,2, 32, 1, 28, 28))
-t.add(new Activation("linear"))
-t.add(new Convolution2D(16, 32, 3, 3, 14, 14))
-t.add(new Activation("relu"))
-t.add(new MaxPooling2D(2,2,2,2, 512, 1, 14, 14))
-t.add(new Activation("linear"))
-t.add(new Dense(25088, 10))
-t.add(new Activation("softmax"))
-val trained = neural_network(t, features, labels, lr=.001, num_iters=100, optimizer="adam")
+// val t = new Sequential()
+// t.add(new Convolution2D(32, 1, 3, 3, 28, 28))
+// t.add(new Activation("relu"))
+// t.add(new MaxPooling2D(2,2,2,2, 32, 1, 28, 28))
+// t.add(new Activation("linear"))
+// t.add(new Convolution2D(16, 32, 3, 3, 14, 14))
+// t.add(new Activation("relu"))
+// t.add(new MaxPooling2D(2,2,2,2, 512, 1, 14, 14))
+// t.add(new Activation("linear"))
+// t.add(new Dense(25088, 10))
+// t.add(new Activation("softmax"))
+// val trained = neural_network(t, features, labels, lr=.001, num_iters=100, optimizer="adam")
 
 
 // val batch = x(0 until 32, ::)
